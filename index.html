@@ -15,6 +15,132 @@
 <title>Dossier Médical – Dr. RANDRIAMBOLOLONIAINA</title>
 <!-- ===== CORRECTIONS v2 — 07/06/2026 =====
   Fix 1  : Suppression des 2 </div> orphelins après <body>
+
+<style>
+#licenseOverlay {
+  position: fixed; inset: 0; z-index: 999999;
+  background: linear-gradient(135deg, #061F16 0%, #0a3d26 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+#licenseBox {
+  background: #fff; border-radius: 20px; padding: 36px 28px;
+  width: 90%; max-width: 380px; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+#licenseBox .lic-logo {
+  font-size: 48px; margin-bottom: 8px;
+}
+#licenseBox h2 {
+  font-size: 20px; font-weight: 700; color: #061F16;
+  margin: 0 0 4px;
+}
+#licenseBox p {
+  font-size: 13px; color: #666; margin: 0 0 24px;
+}
+#licenseInput {
+  width: 100%; box-sizing: border-box;
+  border: 2px solid #e0e0e0; border-radius: 10px;
+  padding: 12px 16px; font-size: 16px; letter-spacing: 2px;
+  text-align: center; text-transform: uppercase;
+  outline: none; transition: border 0.2s;
+  font-family: monospace;
+}
+#licenseInput:focus { border-color: #061F16; }
+#licenseBtn {
+  width: 100%; margin-top: 16px;
+  background: #061F16; color: #fff;
+  border: none; border-radius: 10px;
+  padding: 14px; font-size: 16px; font-weight: 600;
+  cursor: pointer; transition: background 0.2s;
+}
+#licenseBtn:hover { background: #0a3d26; }
+#licenseError {
+  color: #e53e3e; font-size: 13px;
+  margin-top: 10px; min-height: 20px;
+}
+#licenseFooter {
+  font-size: 11px; color: #aaa; margin-top: 20px;
+}
+</style>
+
+<div id="licenseOverlay">
+  <div id="licenseBox">
+    <div class="lic-logo">🏥</div>
+    <h2>Ny Aina Med's Consultation</h2>
+    <p>Entrez votre clé de licence pour activer l'application</p>
+    <input id="licenseInput" type="text" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19"
+      oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9-]/g,'')">
+    <button id="licenseBtn" onclick="checkLicense()">Activer</button>
+    <div id="licenseError"></div>
+    <div id="licenseFooter">© 2025 RANDRIAMBOLOLONIAINA N.T.C.<br>Tous droits réservés</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // Check if already activated
+  if (localStorage.getItem('nyaina_med_activated') === 'true') {
+    document.getElementById('licenseOverlay').style.display = 'none';
+    return;
+  }
+
+  // Valid license key hashes (SHA-256)
+  const VALID_HASHES = ["76a795cb793271d6d9e8ecbbb4252ce97b8c77be926e098a0c6108e6390ee48a", "e007486d888936f32b43e771b1dd52bb4e795065180516ad6ab478464ac74336", "6b2eccf11fc302b538acd1b1aaa7083df95341f7c263e74c64a1f62e35e97b42", "dddc7696a136d6c805ed99b3df2bec31cc3d27a63e5cf2e57f2eda1a60af8638", "2264254901470220660f9d47bfac9d6eaf2cef59d1623b7fc93f07803d69dfde", "186f5d50d88bb48bf592e8c850d9df9eeed87350ce84e3f1416dbf9ba4ad8e13", "293358a0f2f404fbd35078c142d329148de400cb1b45f5bcc6255e8dfaacbf8f", "6b0fadfe616537a724e128bf6385d9dea5ea11cec0e4f5ef01870215d4da359e", "e62b8b211305d3a5add8dc33e18b3f178134f323b1d1aa53fc0980b110196303", "665f99e9b8b17d6c4a51f5ef21039f909532aa244cb608796b7613c2c68b63f3", "69a9f98f77a48161e1caba3c7a533ab4ab4d4bc8e5c0436eebff6c19558b00ea", "26711194d9827a45bcf63298723e9ad9dfa9850c85488937d890e0737b7334c9", "e3b804607de806ad375aad0979a21eb31d8cc75b55e07f514839481b9ea06cbf", "ec3351a7f5b008eac6b05e38f97217f25791f0a4fff9d0484ecee12ae176f211", "b1b91a51de0362cad68b44ab435146e80a308f6e1a653bc3e57be87ad500f64b", "ae904149db58ed4fc28e8466f1d5a9a9f41331fbae4ead8bfd22e1ef7fadfc7e", "700848242555008ce3dd7cfaeab4257ff3bda6b565da03369f5d7b039f5231f0", "acf0124183f795eeadeac921d8f8c5d88922ef474905f0ecf710a2f5a6ff8db7", "e0e3502b7632fb950418e5f1f5f5cb97134e39a16019fe8ed51d7cdd377fda54", "a60ebde3aa1800361f84eb51084d642d93bae855e752ff0a0268595ecbbb28f5", "76d6592a71c95c0b919e0a4f2a710b9e6a9fb3b1d4e85597ab8fe7445d7161fd", "20e01b0f2764248051e1e2b72f50fdd3c6fe2b6e3b9fc64ef5d31f5231540ec3", "6391c2189a75012ece918523a52e7ca60fbc786f486cb3dcb7526cd08f71a434", "9c1462a2b38795092951efbe4558d9f22a45f6c90876265f8b4ed278f25d880e", "6b1baa9852f6aae6dff1ff355ab086ba0d03e1aa3584834a919a5721bedba71e", "f227fe750a973be3f84d7ffb6eff62ce89bd23da5684399cb280c16446bd0020", "af7f135a332cdd6e98bd55c6d2f96cd5d64d29476f2c328d6ad62d38d7c29e23", "eea29819caae8a1fe7ed48058832fb497f118dfd140489f7578b6cc0d3a58d7b", "0e93c0bb108abc416d4469263878f3bb0606c2537a07b40ba8417a6e8be7e0d0", "fccee7e100f4af60b355cb0b41aaa5b53a52c4675c5c7aec4677b53f3f1b0146", "241d3c01e8263368c7a011af59e85d87a4b7884b638af74f48b735ff152e0c4d", "5d66dc0708cc88e97f8910c909d1fb367819472daedb3c9c45414f1b8b8407cd", "660d0651fff98cde411e63e369637c0acea4ac8c1d5a0c70e902c6c0f6492978", "66a3aa402c4cd5b411413756bd6330b49e9dfabc1905bdfaee12c2dba3864e89", "07610e0cc5c4fc1c9cc11ec8a664921936cc3cdae704a5a9b1c108756354b141", "cbe0340ca5a59c7c046321af603c410d4c346a3f6adf1be43d696afd7c627a39", "fa62e6ef0ae7a17804441c5788a5da51dfbc9884e545b70e5417e41cd5338a9b", "d5b8de940ba2375eaa0bfa89e70922ec5724f00db6c4377051bd82afe734aa45", "a6564c492f8ca8da7682562c2231790f5f00755b309998bcb32b6397910646bc", "c38c0d794e13f5eadf11443c9718e68cdd26c1a60c45dd224e64d7fedaacceee", "006eceb7bd1f9d90d669e14f623f47435e08e412830f9cc8e0d207d04537449e", "4a209ab1fffb0069b6ad2f952e632d6533d3ceb4d5f2fdeca0d26724bcd63c81", "f1ea2ae217f28bf8ef80db538d1ec4b55f62928134770e63370d7591cd6c957c", "fec51f37c2e9ff831a012547e09b3fda844e665b62abf0ff5b87af4084edf629", "ed13d5f47251fd7434f48c4acf8e3aa2f40fb0f197ca0ee6c844041c83c75c45", "a9edd000eebfa8b85123b7675afc28ebac8f688328b512531b8776d3580b10bb", "586e6818add8787a60fddb14a9e6204896adec1930f28f1ca91a962b52a32dfc", "b4e892f27fb9048f3d7ab7b947fe4e6d5f3a965f643511b0f246003c0ecec7c1", "ff932406567c1d6e2b940e7e38c0f1243ce013842f09781f70db9d2e93371b42", "fac107b781dbe7f0f207de499394282e23f85a6a5493d5416791a195a2381b10", "7e9ae474c360bd1b6bc61540433a57abc013ed6c73df3c307001a11d0a971884", "1783b582873b6a26526a245ececc4de538824f33137576e8af86e43fed45efa1", "7742739e334dde8a85d5a05fb0d6927d025f0bc140809c74f432bc1d17695ad0", "87df59fced770f3d9e7ea4dbc8f1d38120e8b60f1a13841ef5b8e573ef2f84ef", "9c52a5bad600dc3728d6e79b422baf53fe27d4232bbe72f37b244a7d16e08330", "5b2f7c7e492058d62e43952a22586dae8ce3db61d1fecc422c0868da851b6465", "1dce9c88eab1a230080dd3250eff743339a46f223c6bd33f006f4f3fb409cb4f", "8310c19e713f1d5ee903b4f011a3c61d2dfadb4e081d3d62de1702a8a7edfc2d", "c33422ab5905dde05a8d04d39ac133d6810bfaedb437567817790b300c7f3747", "7752e122625fbd7a3131276bbf7e5da65261d3a8c4be98614cccc58420e88aad", "ce3a6dfe29658136053e55b543b9954ea5239c145005a0fc2d5a6231116210b0", "3688631ed7f39156fb1261f758edb4d8382e12d634f13e04338817f0c549825d", "491c5090a27b26f6a4890df673595f2940f7a0432841b7387a023dc0a0a378b7", "cce30fbe31b6f62e15434e0c32c335bd138c3d0f1c3e42fc60c743a1722ff754", "bde906fbf80760cef369c3ca8e597d047da41625175485f82727206435a0e73d", "fd1dfcd4d3f10522cd72d4c7e98e1d67bf5414cff1e6b422e95d3bb627972ee5", "9b8247dd9744bc2399c4781d652f78ed5ed43720d2d75b60d054823be51ed735", "2b713c408e13e2ae8132b430073bddfd9b50ec4c3c5c5f98a368caa4f9090f2a", "286f6aa9cc0663480963aa8f5627a32d08cd2959fd8bbcbc548f7f8a4de9b797", "6c974ef440f6afe5466a3832638b61d790cc73b98914bae9586cb56cb278e7c0", "2dff2e982e594790600d7f1b215ba41770bb5d9bc4838df0642468c5237f9f6a", "00b1024898addac28d7a0ce1d50d63d83315b869989e2564844129c478f29516", "23bcefab08d35092fdc5db9c409cd3722280e4f5b75939287f23195e56a25664", "f0da1e3d74089963133779d9e0fe7bbea64d1d125ae6db2c46e627adba4f0788", "15934760970321756cb34c37c2c7961940e06d41388826f63a859f8b7ee53772", "4aa57d7930439822a82eccf8218773b7283434341ff154b8394f6e1df09e4fff", "dd73a080493077b4045f337e6f7b1eccd9348527f971b30d937501a0dde49594", "90e81bf384354d923a63ca9295dbb2664ce5852ddc1a79b4bfe6f7f1f8269711", "1e3190e722943e3bcdb37e7e18e689d50dd0d3842969ad00188c09aecb588909", "4733545df64947ee18ee967b8f959b78942daba664c9d7404589cf6893c2c3bd", "7964276ab4fb24674e29acca72983c8f002e81ea598eeacc01f782cbfc621860", "751ac6c3692ee36f860a2adb461813f9224056c760e0e034c5ff2e3ccb2c759d", "de5a9db4d0d00d1b0ca7efb3cb2015e69a3e4dd17d6d0b96d264338a1c7a80b0", "3aef3ecf010c9b7d1d90cf41140dc2fa0a6c7b45f32791addd182eaa6f0341e5", "963fbef3669d10c919a0437fa145d5ef5be5cc0541c051b05067661dff6bdf34", "f17fce671566da5a233e7d67bcad0e1c23819aaa34a327c85e28240dfee8fb56", "4d1aba15edd97d8097babb43fbd81a7a3c5fe13e839cd04b402d7642facece14", "b1b4060ffde4fc9f374bb3a29c34e1565c719e588a0cf744b274f73dca305332", "b1a93e73f05941cdacbf3bdadb4b5af1b54daa9916fcf51337c129e4fba6622b", "1ddaa5d14ba4c8bd1be8e159e1a11ea01752eb180eb8aa1d8c96fb9268eb7ed6", "c07fcda352faf4ce3a7a071b3a38ee032fd7ab5fd73b1825dc13e3bf608d782d", "d98c7068afcb5c6cd534c4f23cd567708b3d353f1958b3fdbd8101b8f9287799", "0a47049c0b5b1d5c517bdc2cbee1d0fc30adec01bb44ca797c4d283f6b06242a", "4747a5943051de4ef08ad6aa96c03dc3fb6a70a9011754efc98afb3c3e184f9b", "8ff32f56729754c999a0ad94d42366a6cde15c0a0a4b585b82191dbe198dfe87", "488ddfee530373d31b67c2efa5e4c15ba983cdeade5af2c0b7f6eab69ef2f0d5", "27d218a046cf289b3ea50c7c7e71a64e0321f520b616e8c0f4c57f9e3b9e4eb5", "52596c229b27475e714d74139d5759e63337162e78602b86307a53489f2343ac", "1cca8b2d4dbf1d1a2e840abd117cf4e17da403a5cc2cf19161001a786f47c8d4", "d30a1ad79535f88afd45348e85c73ec8f03491c72a80b1a652ba419b7e62c12b"];
+
+  async function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  window.checkLicense = async function() {
+    const key = document.getElementById('licenseInput').value.trim();
+    const err = document.getElementById('licenseError');
+    const btn = document.getElementById('licenseBtn');
+
+    if (key.length < 19) {
+      err.textContent = '⚠️ Format invalide. Exemple: XXXX-XXXX-XXXX-XXXX';
+      return;
+    }
+
+    btn.textContent = 'Vérification...';
+    btn.disabled = true;
+
+    const hash = await sha256(key);
+
+    if (VALID_HASHES.includes(hash)) {
+      localStorage.setItem('nyaina_med_activated', 'true');
+      localStorage.setItem('nyaina_med_key', hash);
+      document.getElementById('licenseOverlay').style.display = 'none';
+      err.textContent = '';
+    } else {
+      err.textContent = '❌ Clé invalide. Contactez l'administrateur.';
+      btn.textContent = 'Activer';
+      btn.disabled = false;
+    }
+  };
+
+  // Allow Enter key
+  document.getElementById('licenseInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') window.checkLicense();
+  });
+
+  // Auto-format input: add dashes
+  document.getElementById('licenseInput').addEventListener('input', function(e) {
+    let val = this.value.replace(/-/g, '');
+    let formatted = '';
+    for (let i = 0; i < val.length && i < 16; i++) {
+      if (i > 0 && i % 4 === 0) formatted += '-';
+      formatted += val[i];
+    }
+    this.value = formatted;
+  });
+})();
+</script>
+
+
   Fix 2  : SVG viewbox → viewBox (26 occurrences)
   Fix 3  : IDB patientsInitAll — race condition oncomplete résolue
   Fix 4  : prescriptionItems sauvegardé dans saveConsultation
